@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Какая реплика отвечает?</title>
+    <style>
+        body { font-family: sans-serif; max-width: 640px; margin: 40px auto; padding: 0 16px; }
+        .instance { font-size: 1.6em; font-family: monospace; background: #eef3fb; padding: 12px 16px; border-radius: 6px; }
+        table { width: 100%; border-collapse: collapse; margin: 8px 0 24px; }
+        th, td { text-align: left; padding: 6px 8px; border-bottom: 1px solid #ddd; }
+        .muted { color: #666; font-size: 0.9em; }
+        .current { font-weight: bold; background: #fff8dc; }
+    </style>
+</head>
+<body>
+    <h1>Какая реплика отвечает?</h1>
+
+    <p>Этот запрос обработала реплика:</p>
+    <div class="instance">{{ instance }}</div>
+
+    <h2>Счётчики</h2>
+    <table>
+        <tr><td>Локальный счётчик этой реплики (в памяти процесса)</td><td>{{ local_hits }}</td></tr>
+        <tr><td>Общий счётчик всех обращений (в Redis)</td><td>{{ total_hits }}</td></tr>
+    </table>
+
+    <h2>Обращения по репликам (из Redis)</h2>
+    <table>
+        <thead><tr><th>Реплика</th><th>Обращений</th></tr></thead>
+        <tbody>
+            {% for name, count in by_instance.items() %}
+            <tr class="{{ 'current' if name == instance else '' }}"><td>{{ name }}</td><td>{{ count }}</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <h2>Что видит приложение о запросе</h2>
+    <table>
+        <tr><td>IP-адрес, с которого пришло соединение</td><td>{{ client_ip }}</td></tr>
+        <tr><td>Заголовок X-Real-IP</td><td>{{ real_ip }}</td></tr>
+        <tr><td>Заголовок X-Forwarded-For</td><td>{{ forwarded_for }}</td></tr>
+        <tr><td>Заголовок Host</td><td>{{ host_header }}</td></tr>
+    </table>
+    <p class="muted">Обновляйте страницу и следите, как меняется имя реплики и локальный счётчик.</p>
+</body>
+</html>
